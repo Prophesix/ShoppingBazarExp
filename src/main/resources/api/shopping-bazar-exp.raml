@@ -1,10 +1,10 @@
 #%RAML 1.0
-title: Shopping Bazar Exp
+title: Shopping Bazar Pro
 version: 1.0
 baseUri: api
-types:
- # Fullinventory: !include datatypes/FullInventory.raml
-
+uses:
+  common:
+    /exchange_modules/82915fac-aca8-4c8a-8d0b-8344c8524078/common/1.0.1/common.raml
 /search/items:
   get:
     displayName: Search all items
@@ -13,6 +13,7 @@ types:
       200:
        body:
           application/json: 
+            type: common.shoppingItemType
 #           type: Fullinventory[]
 /item/{item_id}:
       get:
@@ -26,6 +27,9 @@ types:
       put:
         displayName:  Update Item
         description:  Update existing item
+        body:
+          application/json:
+            type: common.shoppingItemType
         responses:
           201:
             body:

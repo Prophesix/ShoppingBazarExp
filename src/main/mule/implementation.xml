@@ -1,15 +1,69 @@
 <?xml version="1.0" encoding="UTF-8"?>
-
-<mule xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns="http://www.mulesoft.org/schema/mule/core"
-	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
-	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
-http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd">
-	<http:request-config name="HTTP_Request_configuration" doc:name="HTTP Request configuration" doc:id="53fb5404-f159-4e14-a6d1-1015772e7002" basePath="/search/items" >
-		<http:request-connection host="localhost" port="8082" />
-	</http:request-config>
-	<flow name="SearchItemsflow" doc:id="6765341a-a41c-4afe-b352-af17b0c72235" >
-		<logger level="INFO" doc:name="StartLogg" doc:id="6af03040-a318-4597-8a44-b2b606cc2aac" message="StartingSearchItemflow "/>
-		<http:request method="GET" doc:name="Request" doc:id="32d5adea-de0a-462d-8522-a54fe6723560" config-ref="HTTP_Request_configuration" sendCorrelationId="ALWAYS"/>
-		<logger level="INFO" doc:name="EndSearchLog" doc:id="520b2dd3-49e7-4d89-abca-1edc98be6682" message="End Search Log"/>
-	</flow>
+<mule xmlns:file="http://www.mulesoft.org/schema/mule/file" xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:apikit="http://www.mulesoft.org/schema/mule/mule-apikit" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd http://www.mulesoft.org/schema/mule/mule-apikit http://www.mulesoft.org/schema/mule/mule-apikit/current/mule-apikit.xsd 
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd
+http://www.mulesoft.org/schema/mule/file http://www.mulesoft.org/schema/mule/file/current/mule-file.xsd">
+    <http:listener-config name="shopping-bazar-exp-httpListenerConfig">
+        <http:listener-connection host="0.0.0.0" port="8081" />
+    </http:listener-config>
+    <apikit:config name="shopping-bazar-exp-config" api="shopping-bazar-exp.raml" outboundHeadersMapName="outboundHeaders" httpStatusVarName="httpStatus" />
+    <flow name="delete:\item\(item_id):shopping-bazar-exp-config">
+        <flow-ref doc:name="Flow Reference" doc:id="26a2e7ec-5700-4143-83c6-652562711ee2" name="deleteitem" />
+        <ee:transform xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" doc:id="29e812e8-97e5-49ff-b7e5-04d15813a178">
+            <ee:variables>
+                <ee:set-variable variableName="item_id"><![CDATA[%dw 2.0
+output application/json
+---
+payload]]></ee:set-variable>
+            </ee:variables>
+        </ee:transform>
+        <ee:transform xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd" doc:id="9f4998b9-0fa5-480a-8ce9-1313ac9cc271">
+            <ee:message>
+                <ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+payload]]></ee:set-payload>
+            </ee:message>
+        </ee:transform>
+    </flow>
+    <flow name="get:\item\(item_id):shopping-bazar-exp-config">
+        <flow-ref doc:name="Flow Reference" doc:id="8c142067-e229-4dff-8df6-7e6a1fbd4c30" name="getitembyitemid" />
+        <ee:transform xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" doc:id="e73ae4b3-b75d-437d-b1a6-0b7b0be5c51c">
+            <ee:variables>
+                <ee:set-variable variableName="item_id"><![CDATA[%dw 2.0
+output application/json
+---
+payload]]></ee:set-variable>
+            </ee:variables>
+        </ee:transform>
+        <logger level="INFO" message="get:\item\(item_id):shopping-bazar-exp-config" />
+    </flow>
+    <flow name="get:\search\items:shopping-bazar-exp-config">
+        <flow-ref doc:name="Flow Reference" doc:id="cc867848-5915-4b4b-bcd7-6f992604237a" name="SearchAllItems" />
+        <logger level="INFO" message="get:\search\items:shopping-bazar-exp-config" />
+    </flow>
+    <flow name="post:\item\(item_id):shopping-bazar-exp-config">
+        <ee:transform xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" doc:id="d4456f72-9c26-401c-9ffa-286c105495b5">
+            <ee:variables>
+                <ee:set-variable variableName="item_id"><![CDATA[%dw 2.0
+output application/json
+---
+payload]]></ee:set-variable>
+            </ee:variables>
+        </ee:transform>
+        <flow-ref doc:name="Flow Reference" doc:id="56aa75bc-3e5d-444f-bead-8d40dbee1292" name="postitem" />
+        <logger level="INFO" message="post:\item\(item_id):shopping-bazar-exp-config" />
+    </flow>
+    <flow name="put:\item\(item_id):application\json:shopping-bazar-exp-config">
+        <flow-ref doc:name="Flow Reference" doc:id="9c2833fb-3bf1-4b38-9975-fbe4bfb5fd68" name="putitembyid"/>
+		<ee:transform xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd" doc:id="7a11448e-b5e9-48dc-aa27-273a67a30d43">
+            <ee:message>
+                <ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+{
+	message: "Item has been posted."
+}]]></ee:set-payload>
+            </ee:message>
+        </ee:transform>
+    </flow>
 </mule>

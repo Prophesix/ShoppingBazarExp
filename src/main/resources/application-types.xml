@@ -1,0 +1,26 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<types:mule xmlns:types="http://www.mulesoft.org/schema/mule/types">
+  <types:catalog>
+    <types:type name="datatype" format="json">
+      <types:shape format="weave" example="Datatype/jsonfile.json"><![CDATA[%dw 2.0
+
+type datatype = Array<{|  itemID: String,   description: String,   itemPrice: Number {"typeId": "int"},   itemName: String,   itemOrigin: String|}> {"example": "[{\"itemID\":\"101\",\"description\":\"laptop computer description\",\"itemPrice\":1400,\"itemName\":\"Laptop\",\"itemOrigin\":\"BestBuy\"},{\"itemID\":\"102\",\"description\":\"Desktop computer description\",\"itemPrice\":1500,\"itemName\":\"Desktop\",\"itemOrigin\":\"BestBuy\"}]"}
+
+]]></types:shape>
+    </types:type>
+  </types:catalog>
+  <types:enrichment select="#86738251-8cb6-49c5-bbf4-c3963638ff99">
+    <types:processor-declaration>
+      <types:input-event>
+        <types:message>
+          <types:payload type="datatype"/>
+        </types:message>
+      </types:input-event>
+      <types:output-event>
+        <types:message>
+          <types:payload type="datatype"/>
+        </types:message>
+      </types:output-event>
+    </types:processor-declaration>
+  </types:enrichment>
+</types:mule>

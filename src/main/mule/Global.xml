@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core"
+	xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+	<http:request-config name="ProcesslayerEndpoint" doc:name="HTTP Request configuration" doc:id="39673e9f-cd20-47be-a38d-4bb7322510ee">
+		<http:request-connection host="localhost" port="8082" />
+	</http:request-config>
+	<error-handler name="GlobalError_Handler" doc:id="b86103e9-aa04-4fd1-b438-0f3b3e16c310" >
+		<on-error-continue enableNotifications="true" logException="true" doc:name="On Error Continue" doc:id="19411407-5389-481c-b670-9cba1ff90b12" type='When: #[ error.errorType.namespace == "HTTP" ]'>
+			<ee:transform doc:name="Transform Message" doc:id="60f4e2ab-7062-4f53-9a87-48b3a29cf282">
+				<ee:message>
+					<ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+{
+	Exception:"Exception successfully handled "
+}]]></ee:set-payload>
+				</ee:message>
+			</ee:transform>
+		</on-error-continue>
+		<on-error-propagate enableNotifications="true" logException="true" doc:name="On Error Propagate" doc:id="b2396cf2-ef5f-4719-8154-970bda5e5d9b" >
+			<logger level="INFO" doc:name="Logger" doc:id="8a63a5d4-e359-4f47-add4-a8a5ae2a9823" message="Exception Occured in System API" />
+		</on-error-propagate>
+	</error-handler>
+	</mule>

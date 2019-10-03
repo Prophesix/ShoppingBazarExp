@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:java="http://www.mulesoft.org/schema/mule/java" xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd">
+	
+	<http:request-config name="PutItemByID" doc:name="HTTP Request configuration" doc:id="dfa1e099-8700-41f7-a256-c567f63895b2" >
+		<http:request-connection port="8082"/>
+	</http:request-config>
+	<flow name="getitembyitemid" doc:id="64d13cbc-d31e-4f44-82a6-47a82a2b1887" >
+		<logger level="INFO" doc:name="SearchAllitemStarted" doc:id="0a9af8bd-d217-4756-ac39-d4219b70e750" />
+		<http:request method="GET" doc:name="Request" doc:id="89728554-91f0-4267-b3f9-77a455665c12" path="/item/{item_id}" config-ref="ProcesslayerEndpoint">
+			<http:uri-params ><![CDATA[#[output application/java
+---
+{
+	"item_id" : attributies.uriParams.item_id
+}]]]></http:uri-params>
+		</http:request>
+		<logger level="INFO" doc:name="searchbyitemid" doc:id="9fee4e6d-8506-48b5-a0f9-35ad2fd81445" />
+	</flow>
+	<flow name="putitembyid" doc:id="da49e8e5-df38-494c-b0cb-e08ab8acfc7a" >
+		<logger level="INFO" doc:name="putstatus" doc:id="2f39069c-045d-4e8b-b1c4-247b6174bc5e" />
+		<http:request method="PUT" doc:name="Request" doc:id="a0cb97ef-7a84-4b1d-9416-f68e2b22dfdd" path="/item/{item_id}" config-ref="ProcesslayerEndpoint">
+			<http:uri-params ><![CDATA[#[output application/java
+---
+{
+	"item_id" : attributes.uriParams.item_id
+}]]]></http:uri-params>
+		</http:request>
+		<logger level="INFO" doc:name="Item has been updated" doc:id="bcb242d1-ffe1-4ae3-9ff2-57a01466ee26" />
+	</flow>
+	<flow name="deleteitem" doc:id="acd9f3e0-cc18-4506-a119-ad33ed9458c6" >
+		<logger level="INFO" doc:name="startdelete" doc:id="cc2a3cf6-2e11-4f03-ab7a-61ec9da3e90d" />
+		<http:request method="DELETE" doc:name="Request" doc:id="49ad7a61-c33c-4182-a9ac-1a79c6189d32" path="/item/{item_id}" config-ref="ProcesslayerEndpoint"/>
+		<logger level="INFO" doc:name="deletestatus" doc:id="171ac4e0-ccc1-440f-90b6-b54b2cf0267a" />
+	</flow>
+	<flow name="postitem" doc:id="b20c68b5-9ff1-446f-ac16-1f43518aa6f1" >
+		<logger level="INFO" doc:name="updateItem" doc:id="d1180e19-70da-4907-a46c-17e09a5d328b" />
+		<http:request method="POST" doc:name="Request" doc:id="20e3f418-1a9a-47b6-b1a2-2f6d8de9e161" config-ref="ProcesslayerEndpoint" path="/item/{item_id}">
+			<http:uri-params ><![CDATA[#[output application/java
+---
+{
+	"item_id" : attributes.uriParams.item_id
+}]]]></http:uri-params>
+		</http:request>
+		<logger level="INFO" doc:name="item_updated " doc:id="f76eca20-6861-4c5a-ac1b-d062b89b35f7" />
+	</flow>
+	<flow name="SearchAllItems" doc:id="6765341a-a41c-4afe-b352-af17b0c72235" >
+		<logger level="INFO" doc:name="StartallSerach" doc:id="6af03040-a318-4597-8a44-b2b606cc2aac" message="StartingSearchItemflow "/>
+		<http:request method="GET" doc:name="Request" doc:id="32d5adea-de0a-462d-8522-a54fe6723560" config-ref="ProcesslayerEndpoint" sendCorrelationId="ALWAYS" path="/search/items"/>
+		<logger level="INFO" doc:name="allitemsreterived" doc:id="520b2dd3-49e7-4d89-abca-1edc98be6682" message="End Search Log"/>
+	</flow>
+</mule>
